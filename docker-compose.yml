@@ -1,0 +1,21 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/Amalgam.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./amalgam.yml:/app/amalgam.yml
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConfigPath=/app/amalgam.yml
+
+  web:
+    build:
+      context: src/Amalgam.Web
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
