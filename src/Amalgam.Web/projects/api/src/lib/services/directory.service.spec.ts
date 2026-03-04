@@ -27,7 +27,9 @@ describe('DirectoryService', () => {
     service.browse('/home/user').subscribe((result) => {
       expect(result).toEqual(dirs);
     });
-    const req = httpTesting.expectOne('/api/directories?path=%2Fhome%2Fuser');
+    const req = httpTesting.expectOne(
+      (r) => r.url === '/api/directories' && r.params.get('path') === '/home/user'
+    );
     expect(req.request.method).toBe('GET');
     req.flush(dirs);
   });
@@ -38,7 +40,10 @@ describe('DirectoryService', () => {
       expect(result).toEqual(dirs);
     });
     const req = httpTesting.expectOne(
-      '/api/directories?path=%2Fhome%2Fuser&prefix=pro'
+      (r) =>
+        r.url === '/api/directories' &&
+        r.params.get('path') === '/home/user' &&
+        r.params.get('prefix') === 'pro'
     );
     expect(req.request.method).toBe('GET');
     req.flush(dirs);
