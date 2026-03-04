@@ -1,0 +1,27 @@
+.templates-page {
+  padding: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+
+  h1 {
+    margin: 0 0 24px;
+    font-size: 28px;
+    font-weight: 600;
+  }
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.repo-count {
+  color: #64748b;
+  font-size: 14px;
+  margin: 8px 0 0;
+}
+
+.error {
+  color: #dc2626;
+}

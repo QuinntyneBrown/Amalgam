@@ -1,1 +1,108 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+// Inter font
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+// Material icons
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded');
+
+// Design tokens
+$background: #0F172A;
+$surface: #1E293B;
+$surface-variant: #334155;
+$primary: #3B82F6;
+$primary-dark: #2563EB;
+$text-primary: #F1F5F9;
+$text-secondary: #94A3B8;
+$text-tertiary: #64748B;
+$border: #334155;
+$error: #EF4444;
+$success: #22C55E;
+$warning: #F59E0B;
+$info: #38BDF8;
+
+// Global styles
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: $background;
+  color: $text-primary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Angular Material overrides for dark theme
+.mat-mdc-card {
+  --mdc-elevated-card-container-color: #{$surface};
+  --mdc-outlined-card-container-color: #{$surface};
+  --mdc-outlined-card-outline-color: #{$border};
+}
+
+.mat-mdc-form-field {
+  --mdc-filled-text-field-container-color: #{$surface-variant};
+  --mdc-outlined-text-field-outline-color: #{$border};
+  --mdc-outlined-text-field-focus-outline-color: #{$primary};
+  --mdc-outlined-text-field-label-text-color: #{$text-secondary};
+  --mdc-outlined-text-field-input-text-color: #{$text-primary};
+}
+
+.mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: #{$primary};
+  --mdc-protected-button-label-text-color: #FFFFFF;
+}
+
+.mat-mdc-slide-toggle {
+  --mdc-switch-selected-track-color: #{$primary};
+  --mdc-switch-selected-handle-color: #FFFFFF;
+  --mdc-switch-unselected-track-color: #{$surface-variant};
+}
+
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: #{$surface};
+}
+
+.mat-mdc-select {
+  --mat-select-trigger-text-color: #{$text-primary};
+}
+
+.mat-mdc-option {
+  --mat-option-label-text-color: #{$text-primary};
+}
+
+// Snackbar severity classes
+.snackbar-success {
+  --mdc-snackbar-container-color: #166534;
+  --mdc-snackbar-supporting-text-color: #FFFFFF;
+}
+
+.snackbar-error {
+  --mdc-snackbar-container-color: #991B1B;
+  --mdc-snackbar-supporting-text-color: #FFFFFF;
+}
+
+.snackbar-info {
+  --mdc-snackbar-container-color: #1E3A5F;
+  --mdc-snackbar-supporting-text-color: #FFFFFF;
+}
+
+// Scrollbar styling
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $background;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $surface-variant;
+  border-radius: 4px;
+}
+
+// Global typography
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: $text-primary;
+}

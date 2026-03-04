@@ -1,0 +1,39 @@
+.config-page {
+  padding: 24px;
+  max-width: 640px;
+  margin: 0 auto;
+
+  h1 {
+    margin: 0 0 24px;
+    font-size: 28px;
+    font-weight: 600;
+  }
+
+  ui-card {
+    display: block;
+    margin-bottom: 16px;
+  }
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.env-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.env-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.error {
+  color: #dc2626;
+}

@@ -1,0 +1,39 @@
+<div class="yaml-page">
+  <h1>YAML Configuration</h1>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (error(); as err) {
+    <p class="error">{{ err }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <ui-card>
+      <textarea
+        class="yaml-editor"
+        [value]="yaml()"
+        (input)="onYamlChange($event)"
+        spellcheck="false"
+      ></textarea>
+
+      @if (isValid() !== null) {
+        @if (isValid()) {
+          <ui-alert severity="success" message="Configuration is valid" [dismissible]="true" />
+        } @else {
+          <ui-alert severity="error" message="Configuration has errors" />
+          @for (err of validationErrors(); track err) {
+            <p class="validation-error">{{ err }}</p>
+          }
+        }
+      }
+
+      <div card-actions>
+        <ui-button variant="outline" (clicked)="onDownload()">Download</ui-button>
+        <ui-button variant="outline" (clicked)="onValidate()">Validate</ui-button>
+        <ui-button variant="primary" [disabled]="saving()" (clicked)="onSave()">Save</ui-button>
+      </div>
+    </ui-card>
+  }
+</div>

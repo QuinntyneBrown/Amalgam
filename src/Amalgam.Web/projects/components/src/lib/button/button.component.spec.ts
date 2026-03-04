@@ -25,7 +25,7 @@ describe('ButtonComponent', () => {
   });
 
   it('should emit clicked on click', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
     component.clicked.subscribe(spy);
     const button = fixture.nativeElement.querySelector('button');
     button.click();

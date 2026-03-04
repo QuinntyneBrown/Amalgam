@@ -1,0 +1,25 @@
+<div class="config-page">
+  <h1>Frontend Configuration</h1>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (error(); as err) {
+    <p class="error">{{ err }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <ui-card title="Frontend Settings">
+      <div class="form-fields">
+        <ui-input label="Dashboard Path" placeholder="/dashboard" [(value)]="dashboardPath" />
+
+        <ui-input label="Port" type="number" [(value)]="port" />
+      </div>
+
+      <div card-actions>
+        <ui-button variant="primary" [disabled]="saving()" (clicked)="onSave()">Save</ui-button>
+      </div>
+    </ui-card>
+  }
+</div>

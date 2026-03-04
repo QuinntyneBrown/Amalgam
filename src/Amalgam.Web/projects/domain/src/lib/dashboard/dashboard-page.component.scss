@@ -1,0 +1,35 @@
+.dashboard-page {
+  padding: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+
+  h1 {
+    margin: 0 0 24px;
+    font-size: 28px;
+    font-weight: 600;
+  }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.stat-number {
+  font-size: 48px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.type-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.validation-error {
+  color: #dc2626;
+  font-size: 14px;
+  margin: 4px 0;
+}

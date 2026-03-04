@@ -1,0 +1,21 @@
+.config-page {
+  padding: 24px;
+  max-width: 640px;
+  margin: 0 auto;
+
+  h1 {
+    margin: 0 0 24px;
+    font-size: 28px;
+    font-weight: 600;
+  }
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.error {
+  color: #dc2626;
+}

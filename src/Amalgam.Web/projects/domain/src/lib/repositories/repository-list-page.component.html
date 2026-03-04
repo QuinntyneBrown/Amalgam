@@ -1,0 +1,48 @@
+<div class="repo-list-page">
+  <h1>Repositories</h1>
+
+  <div class="filters">
+    <ui-input
+      label="Search"
+      placeholder="Filter by name..."
+      [value]="searchQuery()"
+      (valueChange)="onSearchChange($event)"
+    />
+
+    <div class="type-filters">
+      @for (type of allTypes; track type) {
+        <ui-chip
+          [label]="type"
+          [selected]="isTypeSelected(type)"
+          (selectedChange)="toggleTypeFilter(type)"
+        />
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (error(); as err) {
+    <p class="error">{{ err }}</p>
+  }
+
+  <div class="repo-grid">
+    @for (repo of filteredRepos(); track repo.name) {
+      <ui-card [title]="repo.name" [subtitle]="repo.path" (click)="onCardClick(repo)">
+        <div class="repo-info">
+          <ui-chip [label]="repo.type" />
+          <ui-toggle [checked]="repo.enabled" (checkedChange)="onToggleEnabled(repo)" />
+        </div>
+        <div card-actions>
+          <button class="delete-btn" (click)="onDelete(repo); $event.stopPropagation()">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+      </ui-card>
+    }
+  </div>
+
+  <ui-fab icon="add" label="Add Repository" (clicked)="onAdd()" />
+</div>

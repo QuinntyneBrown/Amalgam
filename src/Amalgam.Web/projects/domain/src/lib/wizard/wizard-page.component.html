@@ -1,0 +1,113 @@
+<div class="wizard-page">
+  <h1>Setup Wizard</h1>
+
+  <ui-step-indicator [steps]="steps()" />
+
+  @if (error(); as err) {
+    <ui-alert severity="error" [message]="err" [dismissible]="true" (dismissed)="error.set(null)" />
+  }
+
+  <div class="step-content">
+    <!-- Step 0: Choose -->
+    @if (currentStep() === 0) {
+      <h2>How would you like to start?</h2>
+      <div class="choice-grid">
+        <ui-card
+          title="Start Fresh"
+          subtitle="Create a new configuration from scratch"
+          [class.selected]="choice() === 'fresh'"
+          (click)="selectChoice('fresh')"
+        />
+        <ui-card
+          title="Use Template"
+          subtitle="Start from a pre-built template"
+          [class.selected]="choice() === 'template'"
+          (click)="selectChoice('template')"
+        />
+        <ui-card
+          title="Scan Directory"
+          subtitle="Detect repositories in a directory"
+          [class.selected]="choice() === 'scan'"
+          (click)="selectChoice('scan')"
+        />
+      </div>
+    }
+
+    <!-- Step 1: Configure -->
+    @if (currentStep() === 1) {
+      @if (choice() === 'template') {
+        <h2>Select a Template</h2>
+        @if (loading()) {
+          <p>Loading templates...</p>
+        }
+        <div class="template-grid">
+          @for (t of templates(); track t.id) {
+            <ui-card
+              [title]="t.name"
+              [subtitle]="t.description"
+              [class.selected]="selectedTemplate()?.id === t.id"
+              (click)="onSelectTemplate(t)"
+            >
+              <p>{{ t.repositoryCount }} repositories</p>
+            </ui-card>
+          }
+        </div>
+      }
+
+      @if (choice() === 'scan') {
+        <h2>Scan for Repositories</h2>
+        <div class="scan-form">
+          <ui-input label="Directory Path" placeholder="/path/to/projects" [(value)]="scanPath" />
+          <ui-button variant="primary" [disabled]="loading()" (clicked)="onScan()">Scan</ui-button>
+        </div>
+        @if (scannedRepos().length > 0) {
+          <p>Found {{ scannedRepos().length }} repositories</p>
+          @for (repo of scannedRepos(); track repo.name) {
+            <ui-card [title]="repo.name" [subtitle]="repo.path" />
+          }
+        }
+      }
+
+      @if (choice() === 'fresh') {
+        <h2>Basic Configuration</h2>
+        <div class="form-fields">
+          <ui-input label="Backend Port" type="number" [(value)]="backendPort" />
+          <ui-input label="Frontend Port" type="number" [(value)]="frontendPort" />
+          <ui-input label="Dashboard Path" placeholder="/dashboard" [(value)]="dashboardPath" />
+        </div>
+      }
+    }
+
+    <!-- Step 2: Review -->
+    @if (currentStep() === 2) {
+      <h2>Review Configuration</h2>
+      <ui-card title="Summary">
+        <p><strong>Repositories:</strong> {{ configSummary.repositories.length }}</p>
+        <p><strong>Backend Port:</strong> {{ configSummary.backend.port }}</p>
+        <p><strong>Frontend Port:</strong> {{ configSummary.frontend.port }}</p>
+        @if (configSummary.frontend.dashboardPath) {
+          <p><strong>Dashboard Path:</strong> {{ configSummary.frontend.dashboardPath }}</p>
+        }
+      </ui-card>
+    }
+
+    <!-- Step 3: Apply -->
+    @if (currentStep() === 3) {
+      <h2>Apply Configuration</h2>
+      <p>Click "Apply" to save your configuration and go to the dashboard.</p>
+    }
+  </div>
+
+  <div class="wizard-actions">
+    @if (currentStep() > 0) {
+      <ui-button variant="outline" (clicked)="onBack()">Back</ui-button>
+    }
+    <ui-button
+      variant="primary"
+      [disabled]="loading() || (currentStep() === 0 && !choice())"
+      (clicked)="onNext()"
+    >
+      {{ currentStep() === 3 ? 'Apply' : 'Next' }}
+    </ui-button>
+  </div>
+</div>

@@ -26,7 +26,7 @@ describe('ChipComponent', () => {
   });
 
   it('should toggle selected on click', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
     component.selectedChange.subscribe(spy);
     fixture.nativeElement.querySelector('.chip').click();
     expect(spy).toHaveBeenCalledWith(true);
@@ -35,7 +35,7 @@ describe('ChipComponent', () => {
   it('should emit removed when remove button clicked', () => {
     fixture.componentRef.setInput('removable', true);
     fixture.detectChanges();
-    const spy = jest.fn();
+    const spy = vi.fn();
     component.removed.subscribe(spy);
     fixture.nativeElement.querySelector('.remove-btn').click();
     expect(spy).toHaveBeenCalled();

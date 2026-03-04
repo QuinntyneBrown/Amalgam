@@ -1,0 +1,60 @@
+.wizard-page {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+
+  h1 {
+    margin: 0 0 24px;
+    font-size: 28px;
+    font-weight: 600;
+  }
+
+  h2 {
+    margin: 24px 0 16px;
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.step-content {
+  min-height: 300px;
+}
+
+.choice-grid,
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+
+  ui-card {
+    cursor: pointer;
+    transition: outline 0.2s;
+
+    &.selected {
+      outline: 2px solid #3b82f6;
+      border-radius: 8px;
+    }
+  }
+}
+
+.scan-form {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.wizard-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}

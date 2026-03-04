@@ -1,0 +1,46 @@
+<div class="config-page">
+  <h1>Backend Configuration</h1>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (error(); as err) {
+    <p class="error">{{ err }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <ui-card title="Server">
+      <div class="form-fields">
+        <ui-input label="Port" type="number" [(value)]="port" />
+      </div>
+    </ui-card>
+
+    <ui-card title="Environment Variables">
+      <div class="env-entries">
+        @for (entry of envEntries(); track $index) {
+          <div class="env-row">
+            <ui-input
+              label="Key"
+              [value]="entry.key"
+              (valueChange)="updateEntryKey($index, $event)"
+            />
+            <ui-input
+              label="Value"
+              [value]="entry.value"
+              (valueChange)="updateEntryValue($index, $event)"
+            />
+            <ui-button variant="text" icon="delete" (clicked)="removeEnvEntry($index)">
+            </ui-button>
+          </div>
+        }
+      </div>
+
+      <ui-button variant="outline" icon="add" (clicked)="addEnvEntry()">Add Variable</ui-button>
+
+      <div card-actions>
+        <ui-button variant="primary" [disabled]="saving()" (clicked)="onSave()">Save</ui-button>
+      </div>
+    </ui-card>
+  }
+</div>

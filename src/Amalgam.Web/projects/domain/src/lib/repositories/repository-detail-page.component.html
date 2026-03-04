@@ -1,0 +1,46 @@
+<div class="detail-page">
+  <div class="header">
+    <ui-button variant="text" icon="arrow_back" (clicked)="onBack()">Back</ui-button>
+    <h1>Repository Details</h1>
+  </div>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (error(); as err) {
+    <p class="error">{{ err }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <ui-card>
+      <div class="form-fields">
+        <ui-input label="Name" [(value)]="name" />
+
+        <ui-select-field label="Type" [options]="typeOptions" [(value)]="type" />
+
+        <ui-input label="Path" [(value)]="path" />
+
+        <div class="toggle-row">
+          <span>Enabled</span>
+          <ui-toggle [checked]="enabled()" (checkedChange)="onToggle()" />
+        </div>
+
+        <ui-input label="Route Prefix" [(value)]="routePrefix" />
+
+        <ui-input label="Package Name" [(value)]="packageName" />
+
+        <h3>Merge Config</h3>
+
+        <ui-input label="Sources (comma-separated)" [(value)]="mergeSources" />
+
+        <ui-input label="Target" [(value)]="mergeTarget" />
+      </div>
+
+      <div card-actions>
+        <ui-button variant="danger" (clicked)="onDelete()">Delete</ui-button>
+        <ui-button variant="primary" [disabled]="saving()" (clicked)="onSave()">Save</ui-button>
+      </div>
+    </ui-card>
+  }
+</div>

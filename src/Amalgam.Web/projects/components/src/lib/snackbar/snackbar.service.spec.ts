@@ -20,7 +20,7 @@ describe('SnackbarService', () => {
   });
 
   it('should open snackbar with show()', () => {
-    const spy = jest.spyOn(snackBar, 'open');
+    const spy = vi.spyOn(snackBar, 'open');
     service.show('Hello', 'OK', { duration: 5000 });
     expect(spy).toHaveBeenCalledWith('Hello', 'OK', {
       duration: 5000,
@@ -29,7 +29,7 @@ describe('SnackbarService', () => {
   });
 
   it('should open success snackbar', () => {
-    const spy = jest.spyOn(snackBar, 'open');
+    const spy = vi.spyOn(snackBar, 'open');
     service.success('Done');
     expect(spy).toHaveBeenCalledWith('Done', undefined, {
       duration: 3000,
@@ -38,7 +38,7 @@ describe('SnackbarService', () => {
   });
 
   it('should open error snackbar', () => {
-    const spy = jest.spyOn(snackBar, 'open');
+    const spy = vi.spyOn(snackBar, 'open');
     service.error('Failed');
     expect(spy).toHaveBeenCalledWith('Failed', undefined, {
       duration: 3000,
@@ -47,7 +47,7 @@ describe('SnackbarService', () => {
   });
 
   it('should open info snackbar', () => {
-    const spy = jest.spyOn(snackBar, 'open');
+    const spy = vi.spyOn(snackBar, 'open');
     service.info('Info');
     expect(spy).toHaveBeenCalledWith('Info', undefined, {
       duration: 3000,

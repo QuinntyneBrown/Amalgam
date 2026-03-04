@@ -41,7 +41,7 @@ describe('AlertComponent', () => {
   it('should emit dismissed on dismiss click', () => {
     fixture.componentRef.setInput('dismissible', true);
     fixture.detectChanges();
-    const spy = jest.fn();
+    const spy = vi.fn();
     component.dismissed.subscribe(spy);
     fixture.nativeElement.querySelector('.dismiss-btn').click();
     expect(spy).toHaveBeenCalled();

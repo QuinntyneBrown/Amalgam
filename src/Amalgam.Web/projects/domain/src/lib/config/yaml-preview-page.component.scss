@@ -1,0 +1,40 @@
+.yaml-page {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+
+  h1 {
+    margin: 0 0 24px;
+    font-size: 28px;
+    font-weight: 600;
+  }
+}
+
+.yaml-editor {
+  width: 100%;
+  min-height: 400px;
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  resize: vertical;
+  tab-size: 2;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+}
+
+.validation-error {
+  color: #dc2626;
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+.error {
+  color: #dc2626;
+}

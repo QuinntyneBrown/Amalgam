@@ -1,0 +1,33 @@
+<div class="layout" [class.mobile]="isMobile()">
+  @if (!isMobile()) {
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h2>Amalgam</h2>
+      </div>
+      <ul class="nav-list">
+        @for (item of navItems; track item.route) {
+          <li
+            class="nav-item"
+            [class.active]="activeRoute.startsWith(item.route)"
+            (click)="onNavigate(item.route)"
+          >
+            <span class="material-icons">{{ item.icon }}</span>
+            <span>{{ item.label }}</span>
+          </li>
+        }
+      </ul>
+    </nav>
+  }
+
+  <main class="content">
+    <router-outlet />
+  </main>
+
+  @if (isMobile()) {
+    <ui-bottom-nav
+      [items]="navItems"
+      [activeRoute]="activeRoute"
+      (navigate)="onNavigate($event)"
+    />
+  }
+</div>

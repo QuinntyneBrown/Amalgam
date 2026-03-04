@@ -1,0 +1,36 @@
+<div class="add-repo-page">
+  <h1>Add Repository</h1>
+
+  <ui-card>
+    <div class="form-fields">
+      <ui-input label="Name" placeholder="my-service" [(value)]="name" />
+
+      <ui-select-field
+        label="Type"
+        [options]="typeOptions"
+        [(value)]="type"
+      />
+
+      <ui-input label="Path" placeholder="/path/to/repo" [(value)]="path" />
+
+      <ui-input label="Route Prefix (optional)" placeholder="/api" [(value)]="routePrefix" />
+
+      <ui-input label="Package Name (optional)" placeholder="my-package" [(value)]="packageName" />
+
+      <h3>Merge Config (optional)</h3>
+
+      <ui-input
+        label="Sources (comma-separated)"
+        placeholder="src/a, src/b"
+        [(value)]="mergeSources"
+      />
+
+      <ui-input label="Target" placeholder="dist/merged" [(value)]="mergeTarget" />
+    </div>
+
+    <div card-actions>
+      <ui-button variant="text" (clicked)="onCancel()">Cancel</ui-button>
+      <ui-button variant="primary" [disabled]="saving()" (clicked)="onSave()">Save</ui-button>
+    </div>
+  </ui-card>
+</div>

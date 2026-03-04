@@ -39,7 +39,7 @@ describe('BottomNavComponent', () => {
   });
 
   it('should emit navigate on click', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
     component.navigate.subscribe(spy);
     fixture.nativeElement.querySelector('.nav-item').click();
     expect(spy).toHaveBeenCalledWith('/home');

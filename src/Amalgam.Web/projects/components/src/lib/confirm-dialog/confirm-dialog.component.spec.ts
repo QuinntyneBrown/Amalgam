@@ -6,10 +6,10 @@ import { ConfirmDialogComponent } from './confirm-dialog.component';
 describe('ConfirmDialogComponent', () => {
   let component: ConfirmDialogComponent;
   let fixture: ComponentFixture<ConfirmDialogComponent>;
-  let dialogRef: { close: jest.Mock };
+  let dialogRef: { close: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    dialogRef = { close: jest.fn() };
+    dialogRef = { close: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [ConfirmDialogComponent],

@@ -1,0 +1,40 @@
+<div class="dashboard-page">
+  <h1>Dashboard</h1>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (error(); as err) {
+    <ui-alert severity="error" [message]="err" />
+  }
+
+  @if (summary(); as s) {
+    <div class="cards-grid">
+      <ui-card title="Total Repositories">
+        <span class="stat-number">{{ s.totalRepositories }}</span>
+      </ui-card>
+
+      <ui-card title="By Type">
+        <div class="type-chips">
+          @for (entry of typeEntries; track entry.type) {
+            <ui-chip [label]="entry.type + ': ' + entry.count" />
+          }
+        </div>
+      </ui-card>
+
+      <ui-card title="Validation Status">
+        @if (s.validation.isValid) {
+          <ui-alert severity="success" message="Configuration is valid" />
+        } @else {
+          <ui-alert severity="error" message="Configuration has errors" />
+          @for (err of s.validation.errors; track err) {
+            <p class="validation-error">{{ err }}</p>
+          }
+        }
+      </ui-card>
+    </div>
+
+    <ui-fab icon="add" label="Add Repository" (clicked)="onAddRepo()" />
+  }
+</div>

@@ -1,0 +1,22 @@
+<div class="templates-page">
+  <h1>Templates</h1>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (error(); as err) {
+    <p class="error">{{ err }}</p>
+  }
+
+  <div class="template-grid">
+    @for (template of templates(); track template.id) {
+      <ui-card [title]="template.name" [subtitle]="template.description">
+        <p class="repo-count">{{ template.repositoryCount }} repositories</p>
+        <div card-actions>
+          <ui-button variant="primary" (clicked)="onUseTemplate(template)">Use Template</ui-button>
+        </div>
+      </ui-card>
+    }
+  </div>
+</div>
