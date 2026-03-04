@@ -18,6 +18,7 @@ To run everything locally you'd normally need to publish packages, manage versio
 2. **Runs all backend services in one process** — loads each microservice as a module into a single ASP.NET Core host with route prefix isolation (`/service-name/...`).
 3. **Links frontend plugins locally** — uses `npm link` to wire plugin repos into the dashboard project so you get live local changes.
 4. **Provides a single CLI** — one tool to init, validate, build, run, link, and inspect your entire system.
+5. **Configuration Management Web App** — an Angular web application with a REST API backend to visually create, edit, and validate `amalgam.yml` configurations.
 
 ## Quick Start
 
@@ -173,6 +174,79 @@ Remove local links and restore plugins from the npm registry.
 
 Print a table showing all configured repositories, their types, and enabled status.
 
+## Configuration Management Web App
+
+An Angular web application with a dark mode Material UI for managing `amalgam.yml` configurations through a browser. The app communicates with a REST API backend.
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health` | GET | Health check |
+| `/api/config` | GET/PUT | Get or update full configuration |
+| `/api/config/yaml` | GET/PUT | Get or update configuration as raw YAML |
+| `/api/config/validate` | POST | Validate current configuration |
+| `/api/repositories` | GET/POST | List or add repositories |
+| `/api/repositories/{name}` | GET/PUT/DELETE | CRUD on a single repository |
+| `/api/repositories/{name}/toggle` | PATCH | Toggle repository enabled/disabled |
+| `/api/scan` | POST | Scan a directory for repositories |
+| `/api/directories` | GET | Browse directories for type-ahead |
+| `/api/templates` | GET | List configuration templates |
+| `/api/templates/{id}` | GET | Get a template's full configuration |
+| `/api/dashboard` | GET | Dashboard statistics and validation status |
+
+### Running with Docker Compose
+
+```bash
+# Start both API and web app
+eng\scripts\up.bat
+
+# Stop the stack
+eng\scripts\down.bat
+```
+
+This starts:
+- **API** at `http://localhost:8080` — ASP.NET Core backend
+- **Web** at `http://localhost:4200` — Angular frontend (nginx proxies `/api/` to the API)
+
+## Azure Deployment
+
+Bicep infrastructure files in `infra/` deploy the API and web app to Azure Container Apps on the Consumption plan.
+
+### Prerequisites
+
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) installed and logged in
+- Docker installed and running
+- An Azure resource group created
+
+### Deploy
+
+```bash
+# Create a resource group (if needed)
+az group create -n amalgam-rg -l eastus
+
+# Deploy everything
+eng\scripts\deploy.bat amalgam-rg
+```
+
+The deploy script will:
+1. Deploy Azure infrastructure (ACR, Container Apps Environment)
+2. Build and push Docker images to ACR
+3. Deploy the API and web Container Apps
+4. Output the live URLs
+
+### Azure Resources
+
+| Resource | SKU | Est. Cost |
+|----------|-----|-----------|
+| Azure Container Registry | Basic | ~$5/mo |
+| Container Apps Environment | Consumption | Free (pay per use) |
+| API Container App | 0.25 vCPU, 0.5Gi, 0-1 replicas | ~$0-14/mo |
+| Web Container App | 0.25 vCPU, 0.5Gi, 0-1 replicas | ~$0-14/mo |
+| Log Analytics | PerGB2018, 30-day retention | ~$1/mo |
+
+**Estimated total: ~$5/mo idle, ~$35/mo under continuous load.**
+
 ## Integrating Your Microservices
 
 Each microservice needs to implement the `IAmalgamModule` interface so Amalgam can load it into the unified host:
@@ -254,20 +328,42 @@ src/
 │   ├── PackageResolution/     # NuGet → local project reference overrides
 │   └── Plugins/               # npm link/unlink service
 ├── Amalgam.Cli/               # CLI entry point
-└── Amalgam.Host/              # Unified ASP.NET Core host
-    ├── AmalgamHostBuilder     # Composes modules into one WebApplication
-    ├── ModuleLoader           # Assembly loading + IAmalgamModule discovery
-    ├── HealthSummary          # Startup status table
-    ├── Middleware/             # Route prefix isolation
-    └── Diagnostics/           # Actionable error messages
+├── Amalgam.Host/              # Unified ASP.NET Core host
+│   ├── AmalgamHostBuilder     # Composes modules into one WebApplication
+│   ├── ModuleLoader           # Assembly loading + IAmalgamModule discovery
+│   ├── HealthSummary          # Startup status table
+│   ├── Middleware/             # Route prefix isolation
+│   └── Diagnostics/           # Actionable error messages
+├── Amalgam.Api/               # Configuration Management REST API
+│   ├── Controllers/           # Health, Config, Repositories, Scan, etc.
+│   └── Services/              # ConfigFileService, TemplateService
+└── Amalgam.Web/               # Angular web application
+    ├── projects/amalgam/      # Main app (dark mode Material UI)
+    ├── projects/components/   # Stateless presentation components
+    ├── projects/domain/       # Smart/container components
+    └── projects/api/          # API service layer
+infra/
+├── main.bicep                 # Azure deployment orchestrator
+├── main.bicepparam            # Default parameters (dev, eastus)
+└── modules/
+    ├── container-registry.bicep    # ACR (Basic SKU)
+    ├── container-apps-env.bicep    # Container Apps Environment (Consumption)
+    ├── container-app-api.bicep     # API Container App
+    └── container-app-web.bicep     # Web Container App
+eng/scripts/
+├── up.bat                     # Start Docker Compose stack
+├── down.bat                   # Stop Docker Compose stack
+└── deploy.bat                 # Build, push, and deploy to Azure
 tests/
-└── Amalgam.Tests/             # 50 xUnit tests
+└── Amalgam.Tests/             # 97 xUnit tests
 ```
 
 ## Requirements
 
 - .NET 8 SDK
-- Node.js / npm (for frontend plugin linking)
+- Node.js / npm (for frontend plugin linking and web app)
+- Docker (for containerized deployment)
+- Azure CLI (for Azure deployment)
 
 ## License
 
