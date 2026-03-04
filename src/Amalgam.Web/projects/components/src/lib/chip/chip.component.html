@@ -1,0 +1,12 @@
+<span
+  class="chip"
+  [class.selected]="selected()"
+  (click)="onChipClick()"
+>
+  {{ label() }}
+  @if (removable()) {
+    <button class="remove-btn" (click)="onRemove($event)">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+</span>

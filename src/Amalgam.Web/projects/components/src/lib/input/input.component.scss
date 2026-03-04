@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+
+  input {
+    border-radius: 8px;
+  }
+}

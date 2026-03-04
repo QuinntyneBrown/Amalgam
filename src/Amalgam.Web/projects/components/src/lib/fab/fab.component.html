@@ -1,0 +1,10 @@
+@if (label()) {
+  <button mat-fab extended (click)="clicked.emit()">
+    <mat-icon>{{ icon() }}</mat-icon>
+    {{ label() }}
+  </button>
+} @else {
+  <button mat-fab (click)="clicked.emit()">
+    <mat-icon>{{ icon() }}</mat-icon>
+  </button>
+}

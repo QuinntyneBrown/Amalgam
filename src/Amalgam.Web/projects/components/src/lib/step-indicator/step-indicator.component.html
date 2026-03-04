@@ -1,0 +1,17 @@
+<div class="steps">
+  @for (step of steps(); track $index; let last = $last) {
+    <div class="step" [class]="'step-' + step.status">
+      <div class="step-circle">
+        @if (step.status === 'done') {
+          <mat-icon>check</mat-icon>
+        } @else {
+          <span>{{ $index + 1 }}</span>
+        }
+      </div>
+      <span class="step-label">{{ step.label }}</span>
+    </div>
+    @if (!last) {
+      <div class="step-line" [class.done]="step.status === 'done'"></div>
+    }
+  }
+</div>

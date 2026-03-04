@@ -1,0 +1,54 @@
+@switch (variant()) {
+  @case ('primary') {
+    <button
+      mat-raised-button
+      class="btn-primary"
+      [disabled]="disabled()"
+      (click)="clicked.emit()"
+    >
+      @if (icon()) {
+        <mat-icon>{{ icon() }}</mat-icon>
+      }
+      <ng-content />
+    </button>
+  }
+  @case ('outline') {
+    <button
+      mat-stroked-button
+      class="btn-outline"
+      [disabled]="disabled()"
+      (click)="clicked.emit()"
+    >
+      @if (icon()) {
+        <mat-icon>{{ icon() }}</mat-icon>
+      }
+      <ng-content />
+    </button>
+  }
+  @case ('text') {
+    <button
+      mat-button
+      class="btn-text"
+      [disabled]="disabled()"
+      (click)="clicked.emit()"
+    >
+      @if (icon()) {
+        <mat-icon>{{ icon() }}</mat-icon>
+      }
+      <ng-content />
+    </button>
+  }
+  @case ('danger') {
+    <button
+      mat-raised-button
+      class="btn-danger"
+      [disabled]="disabled()"
+      (click)="clicked.emit()"
+    >
+      @if (icon()) {
+        <mat-icon>{{ icon() }}</mat-icon>
+      }
+      <ng-content />
+    </button>
+  }
+}
