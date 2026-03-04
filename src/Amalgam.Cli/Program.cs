@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.Diagnostics;
 using Amalgam.Core.Configuration;
+using Amalgam.Core.Merging;
 using Amalgam.Core.Plugins;
 using Amalgam.Host;
 using Spectre.Console;
@@ -45,6 +46,10 @@ linkPluginsCommand.SetHandler(HandleLinkPlugins, onlyOption);
 var unlinkPluginsCommand = new Command("unlink-plugins", "Unlink plugin packages");
 unlinkPluginsCommand.SetHandler(HandleUnlinkPlugins);
 
+// merge-clean command
+var mergeCleanCommand = new Command("merge-clean", "Clean all merged staging directories");
+mergeCleanCommand.SetHandler(HandleMergeClean);
+
 // status command
 var statusCommand = new Command("status", "Show status of all repositories");
 statusCommand.SetHandler(HandleStatus);
@@ -55,6 +60,7 @@ rootCommand.AddCommand(buildCommand);
 rootCommand.AddCommand(runCommand);
 rootCommand.AddCommand(linkPluginsCommand);
 rootCommand.AddCommand(unlinkPluginsCommand);
+rootCommand.AddCommand(mergeCleanCommand);
 rootCommand.AddCommand(statusCommand);
 
 return await rootCommand.InvokeAsync(args);
@@ -118,6 +124,7 @@ static void HandleBuild()
     }
 
     var config = ConfigLoader.Load(configPath);
+    ApplyMerges(config);
     var backendRepos = config.Repositories
         .Where(r => r.Enabled && (r.Type == RepositoryType.Microservice || r.Type == RepositoryType.Library))
         .ToList();
@@ -168,6 +175,7 @@ static async Task HandleRun(int? port, string[] enable, string[] disable, string
     }
 
     var config = ConfigLoader.Load(configPath);
+    ApplyMerges(config);
 
     // Apply overrides
     if (port.HasValue)
@@ -262,6 +270,7 @@ static void HandleLinkPlugins(string? only)
     }
 
     var config = ConfigLoader.Load(configPath);
+    ApplyMerges(config);
     var service = new NpmLinkService();
     var results = service.LinkPlugins(config, only);
 
@@ -308,4 +317,28 @@ static void HandleUnlinkPlugins()
     }
 
     AnsiConsole.MarkupLine("[green]Restored node_modules via npm install.[/]");
+}
+
+static void HandleMergeClean()
+{
+    var mergeService = new FolderMergeService();
+    var cwd = Directory.GetCurrentDirectory();
+    mergeService.CleanAll(cwd);
+    AnsiConsole.MarkupLine("[green]Cleaned all merged staging directories.[/]");
+}
+
+static void ApplyMerges(AmalgamConfig config)
+{
+    var mergeService = new FolderMergeService();
+    var cwd = Directory.GetCurrentDirectory();
+    foreach (var repo in config.Repositories.Where(r => r.Enabled && r.Merge != null))
+    {
+        AnsiConsole.MarkupLine($"[blue]Merging {Markup.Escape(repo.Name)}: {repo.Merge!.Sources.Count} source(s)...[/]");
+        var result = mergeService.Merge(repo, cwd);
+        if (result.Warnings.Count > 0)
+            foreach (var w in result.Warnings)
+                AnsiConsole.MarkupLine($"  [yellow]{Markup.Escape(w)}[/]");
+        AnsiConsole.MarkupLine($"  [green]{result.MergedFileCount} files merged to {Markup.Escape(result.StagingPath)}[/]");
+        repo.Path = result.StagingPath;
+    }
 }

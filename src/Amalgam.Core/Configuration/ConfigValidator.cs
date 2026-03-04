@@ -10,6 +10,7 @@ public class ConfigValidator
         ValidateNoDuplicateNames(config, errors);
         ValidateAtMostOneDashboard(config, errors);
         ValidateMicroservicesHaveCsproj(config, errors);
+        ValidateMergeConfigs(config, errors);
 
         return errors;
     }
@@ -61,6 +62,49 @@ public class ConfigValidator
             if (csprojFiles.Length == 0)
             {
                 errors.Add($"Microservice '{repo.Name}': no .csproj file found in {repo.Path}");
+            }
+        }
+    }
+
+    private static void ValidateMergeConfigs(AmalgamConfig config, List<string> errors)
+    {
+        foreach (var repo in config.Repositories.Where(r => r.Merge != null))
+        {
+            var merge = repo.Merge!;
+
+            if (merge.Sources.Count == 0)
+            {
+                errors.Add($"Repository '{repo.Name}': merge config has no sources");
+                continue;
+            }
+
+            foreach (var source in merge.Sources)
+            {
+                var sourcePath = Path.Combine(repo.Path, source);
+                if (!Directory.Exists(sourcePath))
+                {
+                    errors.Add($"Repository '{repo.Name}': merge source directory does not exist: {sourcePath}");
+                }
+            }
+
+            if (merge.Target != null)
+            {
+                var targetFound = false;
+                foreach (var source in merge.Sources)
+                {
+                    var sourcePath = Path.GetFullPath(Path.Combine(repo.Path, source));
+                    var targetPath = Path.GetFullPath(Path.Combine(repo.Path, merge.Target));
+                    if (File.Exists(targetPath) && targetPath.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        targetFound = true;
+                        break;
+                    }
+                }
+
+                if (!targetFound)
+                {
+                    errors.Add($"Repository '{repo.Name}': merge target '{merge.Target}' not found within any source");
+                }
             }
         }
     }

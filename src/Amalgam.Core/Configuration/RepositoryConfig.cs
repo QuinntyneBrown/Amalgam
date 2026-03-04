@@ -8,4 +8,5 @@ public class RepositoryConfig
     public bool Enabled { get; set; } = true;
     public string? RoutePrefix { get; set; }
     public string? PackageName { get; set; }
+    public MergeConfig? Merge { get; set; }
 }

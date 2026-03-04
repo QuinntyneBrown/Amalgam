@@ -80,4 +80,29 @@ repositories: []
         Assert.Equal("svc", loaded.Repositories[0].Name);
         Assert.Equal(9000, loaded.Backend.Port);
     }
+
+    [Fact]
+    public void Parse_MergeConfig_Deserializes()
+    {
+        var yaml = @"
+repositories:
+  - name: shared-lib
+    type: Library
+    path: /some/path
+    merge:
+      sources:
+        - src/generated
+        - src/static
+      target: src/generated/Shared.csproj
+";
+        var config = ConfigLoader.Parse(yaml);
+
+        Assert.Single(config.Repositories);
+        var repo = config.Repositories[0];
+        Assert.NotNull(repo.Merge);
+        Assert.Equal(2, repo.Merge!.Sources.Count);
+        Assert.Equal("src/generated", repo.Merge.Sources[0]);
+        Assert.Equal("src/static", repo.Merge.Sources[1]);
+        Assert.Equal("src/generated/Shared.csproj", repo.Merge.Target);
+    }
 }

@@ -146,4 +146,92 @@ public class ConfigValidatorTests
             Directory.Delete(tmpDir, true);
         }
     }
+
+    [Fact]
+    public void Validate_MergeEmptySources_ReturnsError()
+    {
+        var tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        Directory.CreateDirectory(tmpDir);
+        try
+        {
+            var config = new AmalgamConfig
+            {
+                Repositories = new List<RepositoryConfig>
+                {
+                    new()
+                    {
+                        Name = "svc", Type = RepositoryType.Library, Path = tmpDir,
+                        Merge = new MergeConfig { Sources = new List<string>() }
+                    }
+                }
+            };
+
+            var errors = ConfigValidator.Validate(config);
+
+            Assert.Contains(errors, e => e.Contains("merge config has no sources"));
+        }
+        finally
+        {
+            Directory.Delete(tmpDir, true);
+        }
+    }
+
+    [Fact]
+    public void Validate_MergeMissingSource_ReturnsError()
+    {
+        var tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        Directory.CreateDirectory(tmpDir);
+        try
+        {
+            var config = new AmalgamConfig
+            {
+                Repositories = new List<RepositoryConfig>
+                {
+                    new()
+                    {
+                        Name = "svc", Type = RepositoryType.Library, Path = tmpDir,
+                        Merge = new MergeConfig { Sources = new List<string> { "nonexistent" } }
+                    }
+                }
+            };
+
+            var errors = ConfigValidator.Validate(config);
+
+            Assert.Contains(errors, e => e.Contains("merge source directory does not exist"));
+        }
+        finally
+        {
+            Directory.Delete(tmpDir, true);
+        }
+    }
+
+    [Fact]
+    public void Validate_MergeValidSources_NoError()
+    {
+        var tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        var srcDir = Path.Combine(tmpDir, "src1");
+        Directory.CreateDirectory(srcDir);
+        try
+        {
+            var config = new AmalgamConfig
+            {
+                Repositories = new List<RepositoryConfig>
+                {
+                    new()
+                    {
+                        Name = "svc", Type = RepositoryType.Library, Path = tmpDir,
+                        Merge = new MergeConfig { Sources = new List<string> { "src1" } }
+                    }
+                }
+            };
+
+            var errors = ConfigValidator.Validate(config);
+
+            Assert.DoesNotContain(errors, e => e.Contains("merge"));
+        }
+        finally
+        {
+            Directory.Delete(tmpDir, true);
+        }
+    }
 }
