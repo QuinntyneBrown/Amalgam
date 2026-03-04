@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- .NET Tool packaging -->
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>amalgam</ToolCommandName>
+
+    <!-- NuGet package metadata -->
+    <PackageId>Amalgam.Cli</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Amalgam Contributors</Authors>
+    <Description>CLI tool that composes distributed microservices, shared libraries, and UI plugins into a single locally-runnable monolith.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/amalgam-tool/amalgam</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/amalgam-tool/amalgam</RepositoryUrl>
+    <PackageTags>microservices;monolith;development;dotnet-tool;cli</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Amalgam.Core\Amalgam.Core.csproj" />
+    <ProjectReference Include="..\Amalgam.Host\Amalgam.Host.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.49.1" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

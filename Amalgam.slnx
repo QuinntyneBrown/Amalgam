@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Amalgam.Cli/Amalgam.Cli.csproj" />
+    <Project Path="src/Amalgam.Core/Amalgam.Core.csproj" />
+    <Project Path="src/Amalgam.Host/Amalgam.Host.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Amalgam.Tests/Amalgam.Tests.csproj" />
+  </Folder>
+</Solution>
