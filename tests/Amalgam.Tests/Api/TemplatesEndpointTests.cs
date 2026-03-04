@@ -12,7 +12,7 @@ public class TemplatesEndpointTests : ApiTestBase
         var response = await Client.GetAsync("/api/templates");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var templates = await response.Content.ReadFromJsonAsync<List<TemplateSummary>>();
+        var templates = await response.Content.ReadFromJsonAsync<List<TemplateSummary>>(JsonOptions);
         Assert.NotNull(templates);
         Assert.True(templates.Count >= 3);
     }
@@ -21,7 +21,7 @@ public class TemplatesEndpointTests : ApiTestBase
     public async Task GetAll_EachTemplateHasRequiredFields()
     {
         var response = await Client.GetAsync("/api/templates");
-        var templates = await response.Content.ReadFromJsonAsync<List<TemplateSummary>>();
+        var templates = await response.Content.ReadFromJsonAsync<List<TemplateSummary>>(JsonOptions);
 
         foreach (var template in templates!)
         {
@@ -38,7 +38,7 @@ public class TemplatesEndpointTests : ApiTestBase
         var response = await Client.GetAsync("/api/templates/basic-microservice");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var template = await response.Content.ReadFromJsonAsync<TemplateInfo>();
+        var template = await response.Content.ReadFromJsonAsync<TemplateInfo>(JsonOptions);
         Assert.NotNull(template);
         Assert.Equal("Basic Microservice Setup", template.Name);
         Assert.NotNull(template.Config);

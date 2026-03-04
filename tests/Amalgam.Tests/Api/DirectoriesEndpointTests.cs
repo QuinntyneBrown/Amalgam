@@ -16,7 +16,7 @@ public class DirectoriesEndpointTests : ApiTestBase
         var response = await Client.GetAsync($"/api/directories?path={Uri.EscapeDataString(TempDir)}");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var dirs = await response.Content.ReadFromJsonAsync<List<string>>();
+        var dirs = await response.Content.ReadFromJsonAsync<List<string>>(JsonOptions);
         Assert.NotNull(dirs);
         Assert.Contains("alpha", dirs);
         Assert.Contains("beta", dirs);
@@ -32,7 +32,7 @@ public class DirectoriesEndpointTests : ApiTestBase
         var response = await Client.GetAsync($"/api/directories?path={Uri.EscapeDataString(TempDir)}&prefix=al");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var dirs = await response.Content.ReadFromJsonAsync<List<string>>();
+        var dirs = await response.Content.ReadFromJsonAsync<List<string>>(JsonOptions);
         Assert.NotNull(dirs);
         Assert.Single(dirs);
         Assert.Equal("alpha", dirs[0]);
@@ -44,7 +44,7 @@ public class DirectoriesEndpointTests : ApiTestBase
         var response = await Client.GetAsync("/api/directories?path=/nonexistent/path");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var dirs = await response.Content.ReadFromJsonAsync<List<string>>();
+        var dirs = await response.Content.ReadFromJsonAsync<List<string>>(JsonOptions);
         Assert.NotNull(dirs);
         Assert.Empty(dirs);
     }
@@ -56,7 +56,7 @@ public class DirectoriesEndpointTests : ApiTestBase
         Directory.CreateDirectory(Path.Combine(TempDir, "visible"));
 
         var response = await Client.GetAsync($"/api/directories?path={Uri.EscapeDataString(TempDir)}");
-        var dirs = await response.Content.ReadFromJsonAsync<List<string>>();
+        var dirs = await response.Content.ReadFromJsonAsync<List<string>>(JsonOptions);
 
         Assert.DoesNotContain(".hidden", dirs!);
         Assert.Contains("visible", dirs);

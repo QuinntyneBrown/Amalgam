@@ -16,7 +16,7 @@ public class ConfigEndpointTests : ApiTestBase
         var response = await Client.GetAsync("/api/config");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var result = await response.Content.ReadFromJsonAsync<AmalgamConfig>();
+        var result = await response.Content.ReadFromJsonAsync<AmalgamConfig>(JsonOptions);
         Assert.NotNull(result);
         Assert.Equal(2, result.Repositories.Count);
     }
@@ -27,7 +27,7 @@ public class ConfigEndpointTests : ApiTestBase
         var response = await Client.GetAsync("/api/config");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var result = await response.Content.ReadFromJsonAsync<AmalgamConfig>();
+        var result = await response.Content.ReadFromJsonAsync<AmalgamConfig>(JsonOptions);
         Assert.NotNull(result);
         Assert.Empty(result.Repositories);
     }

@@ -22,7 +22,7 @@ public class ScanEndpointTests : ApiTestBase
         var response = await Client.PostAsJsonAsync("/api/scan", new { path = scanDir });
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var repos = await response.Content.ReadFromJsonAsync<List<RepositoryConfig>>();
+        var repos = await response.Content.ReadFromJsonAsync<List<RepositoryConfig>>(JsonOptions);
         Assert.NotNull(repos);
         Assert.Single(repos);
         Assert.Equal("my-service", repos[0].Name);

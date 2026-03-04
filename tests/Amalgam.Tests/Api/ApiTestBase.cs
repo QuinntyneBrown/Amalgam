@@ -1,4 +1,6 @@
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Amalgam.Api.Services;
 using Amalgam.Core.Configuration;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -8,6 +10,12 @@ namespace Amalgam.Tests.Api;
 
 public class ApiTestBase : IDisposable
 {
+    protected static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new JsonStringEnumConverter() }
+    };
+
     protected readonly string TempDir;
     protected readonly string ConfigPath;
     protected readonly HttpClient Client;

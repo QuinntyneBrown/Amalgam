@@ -15,7 +15,7 @@ public class RepositoriesEndpointTests : ApiTestBase
         var response = await Client.GetAsync("/api/repositories");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var repos = await response.Content.ReadFromJsonAsync<List<RepositoryConfig>>();
+        var repos = await response.Content.ReadFromJsonAsync<List<RepositoryConfig>>(JsonOptions);
         Assert.NotNull(repos);
         Assert.Equal(2, repos.Count);
     }
@@ -29,7 +29,7 @@ public class RepositoriesEndpointTests : ApiTestBase
         var response = await Client.GetAsync("/api/repositories/user-service");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var repo = await response.Content.ReadFromJsonAsync<RepositoryConfig>();
+        var repo = await response.Content.ReadFromJsonAsync<RepositoryConfig>(JsonOptions);
         Assert.NotNull(repo);
         Assert.Equal("user-service", repo.Name);
     }
@@ -138,13 +138,13 @@ public class RepositoriesEndpointTests : ApiTestBase
         var response = await Client.PatchAsync("/api/repositories/user-service/toggle", null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var repo = await response.Content.ReadFromJsonAsync<RepositoryConfig>();
+        var repo = await response.Content.ReadFromJsonAsync<RepositoryConfig>(JsonOptions);
         Assert.NotNull(repo);
         Assert.False(repo.Enabled); // was true, now false
 
         // Toggle back
         response = await Client.PatchAsync("/api/repositories/user-service/toggle", null);
-        repo = await response.Content.ReadFromJsonAsync<RepositoryConfig>();
+        repo = await response.Content.ReadFromJsonAsync<RepositoryConfig>(JsonOptions);
         Assert.True(repo!.Enabled);
     }
 }
