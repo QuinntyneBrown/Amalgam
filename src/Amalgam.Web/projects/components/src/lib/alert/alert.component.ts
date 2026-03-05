@@ -10,7 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class AlertComponent {
   severity = input<'error' | 'success' | 'warning' | 'info'>('info');
-  message = input.required<string>();
+  message = input<string>('');
+  title = input<string | undefined>(undefined);
+  description = input<string | undefined>(undefined);
   dismissible = input(false);
 
   dismissed = output<void>();

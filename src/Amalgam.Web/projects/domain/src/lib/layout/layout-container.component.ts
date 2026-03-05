@@ -23,19 +23,27 @@ export class LayoutContainerComponent implements OnInit, OnDestroy {
   private subscription?: Subscription;
 
   isMobile = signal(false);
+  isTablet = signal(false);
+  isDesktop = signal(true);
 
   navItems: NavItem[] = [
     { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
-    { icon: 'folder_copy', label: 'Repos', route: '/repositories' },
-    { icon: 'tune', label: 'Config', route: '/config/backend' },
+    { icon: 'folder_copy', label: 'Repositories', route: '/repositories' },
+    { icon: 'tune', label: 'Backend Config', route: '/config/backend' },
+    { icon: 'web', label: 'Frontend Config', route: '/config/frontend' },
     { icon: 'description', label: 'Templates', route: '/templates' },
+    { icon: 'code', label: 'YAML Preview', route: '/config/yaml' },
   ];
 
   ngOnInit(): void {
     this.subscription = this.breakpointObserver
-      .observe(['(max-width: 767px)'])
+      .observe(['(max-width: 767px)', '(min-width: 768px) and (max-width: 1023px)'])
       .subscribe((result) => {
-        this.isMobile.set(result.matches);
+        const mobile = result.breakpoints['(max-width: 767px)'];
+        const tablet = result.breakpoints['(min-width: 768px) and (max-width: 1023px)'];
+        this.isMobile.set(mobile);
+        this.isTablet.set(tablet);
+        this.isDesktop.set(!mobile && !tablet);
       });
   }
 

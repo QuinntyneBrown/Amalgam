@@ -1,0 +1,41 @@
+- generic [ref=e4]:
+  - navigation [ref=e5]:
+    - heading "Amalgam" [level=2] [ref=e7]
+    - list [ref=e8]:
+      - listitem [ref=e9] [cursor=pointer]:
+        - generic [ref=e10]: dashboard
+        - generic [ref=e11]: Dashboard
+      - listitem [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: folder_copy
+        - generic [ref=e14]: Repos
+      - listitem [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: tune
+        - generic [ref=e17]: Config
+      - listitem [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: description
+        - generic [ref=e20]: Templates
+  - main [ref=e21]:
+    - generic [ref=e23]:
+      - heading "Dashboard" [level=1] [ref=e24]
+      - generic [ref=e25]:
+        - generic "Total Repositories" [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e30]: Total Repositories
+            - generic [ref=e31]: "0"
+        - generic "By Type" [ref=e33]:
+          - generic [ref=e34]:
+            - generic [ref=e37]: By Type
+            - generic [ref=e39]:
+              - generic [ref=e41] [cursor=pointer]: "Microservice: 0"
+              - generic [ref=e43] [cursor=pointer]: "Library: 0"
+              - generic [ref=e45] [cursor=pointer]: "Plugin: 0"
+              - generic [ref=e47] [cursor=pointer]: "Dashboard: 0"
+        - generic "Validation Status" [ref=e49]:
+          - generic [ref=e50]:
+            - generic [ref=e53]: Validation Status
+            - generic [ref=e56]:
+              - img [ref=e57]: check_circle
+              - generic [ref=e58]: Configuration is valid
+      - button "Add Repository" [ref=e61] [cursor=pointer]:
+        - img [ref=e62]: add
+        - generic [ref=e63]: Add Repository

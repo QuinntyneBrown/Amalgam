@@ -1,0 +1,28 @@
+- generic [ref=e4]:
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: A
+      - generic [ref=e8]: Amalgam
+    - list [ref=e9]:
+      - listitem [ref=e10] [cursor=pointer]:
+        - generic [ref=e11]: dashboard
+        - generic [ref=e12]: Dashboard
+      - listitem [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: folder_copy
+        - generic [ref=e15]: Repositories
+      - listitem [ref=e16] [cursor=pointer]:
+        - generic [ref=e17]: tune
+        - generic [ref=e18]: Backend Config
+      - listitem [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: web
+        - generic [ref=e21]: Frontend Config
+      - listitem [ref=e22] [cursor=pointer]:
+        - generic [ref=e23]: description
+        - generic [ref=e24]: Templates
+      - listitem [ref=e25] [cursor=pointer]:
+        - generic [ref=e26]: code
+        - generic [ref=e27]: YAML Preview
+  - main [ref=e28]:
+    - generic [ref=e32]:
+      - img [ref=e33]: error
+      - generic [ref=e34]: Failed to load dashboard summary

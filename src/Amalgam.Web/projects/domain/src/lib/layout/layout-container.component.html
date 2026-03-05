@@ -1,8 +1,17 @@
-<div class="layout" [class.mobile]="isMobile()">
-  @if (!isMobile()) {
+<div class="layout" [class.mobile]="isMobile()" [class.tablet]="isTablet()">
+  @if (isMobile()) {
+    <header class="mobile-header">
+      <span class="material-icons header-icon">menu</span>
+      <span class="mobile-title">Amalgam</span>
+      <span class="material-icons header-settings">settings</span>
+    </header>
+  }
+
+  @if (isDesktop()) {
     <nav class="sidebar">
       <div class="sidebar-header">
-        <h2>Amalgam</h2>
+        <div class="logo-mark">A</div>
+        <span class="logo-text">Amalgam</span>
       </div>
       <ul class="nav-list">
         @for (item of navItems; track item.route) {
@@ -16,6 +25,23 @@
           </li>
         }
       </ul>
+    </nav>
+  }
+
+  @if (isTablet()) {
+    <nav class="icon-rail">
+      <div class="rail-logo">A</div>
+      <div class="rail-divider"></div>
+      @for (item of navItems; track item.route) {
+        <div
+          class="rail-item"
+          [class.active]="activeRoute.startsWith(item.route)"
+          (click)="onNavigate(item.route)"
+        >
+          <span class="material-icons">{{ item.icon }}</span>
+          <span class="rail-label">{{ item.label.split(' ')[0] }}</span>
+        </div>
+      }
     </nav>
   }
 

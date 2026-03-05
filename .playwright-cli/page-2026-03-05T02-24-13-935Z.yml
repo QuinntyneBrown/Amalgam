@@ -1,0 +1,22 @@
+- generic [ref=e4]:
+  - navigation [ref=e5]:
+    - heading "Amalgam" [level=2] [ref=e7]
+    - list [ref=e8]:
+      - listitem [ref=e9] [cursor=pointer]:
+        - generic [ref=e10]: dashboard
+        - generic [ref=e11]: Dashboard
+      - listitem [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: folder_copy
+        - generic [ref=e14]: Repos
+      - listitem [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: tune
+        - generic [ref=e17]: Config
+      - listitem [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: description
+        - generic [ref=e20]: Templates
+  - main [ref=e21]:
+    - generic [ref=e23]:
+      - heading "Dashboard" [level=1] [ref=e24]
+      - generic [ref=e26]:
+        - img [ref=e27]: error
+        - generic [ref=e28]: Failed to load dashboard summary

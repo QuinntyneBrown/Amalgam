@@ -1,35 +1,76 @@
 .dashboard-page {
-  padding: 24px;
-  max-width: 960px;
-  margin: 0 auto;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
   h1 {
-    margin: 0 0 24px;
+    margin: 0;
     font-size: 28px;
-    font-weight: 600;
+    font-weight: 700;
+    color: #f1f5f9;
+    font-family: 'Inter', sans-serif;
   }
 }
 
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+.section-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 1px;
+}
+
+.stats-row {
+  display: flex;
   gap: 16px;
 }
 
-.stat-number {
-  font-size: 48px;
-  font-weight: 700;
-  color: #3b82f6;
-}
-
-.type-chips {
+.stat-card {
+  flex: 1;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 20px;
+  border-radius: 12px;
 }
 
-.validation-error {
-  color: #dc2626;
+.stat-number {
+  font-size: 36px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+}
+
+.stat-label {
   font-size: 14px;
-  margin: 4px 0;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+.quick-actions-row {
+  display: flex;
+  gap: 16px;
+
+  ui-button {
+    flex: 1;
+    display: block;
+
+    ::ng-deep button {
+      width: 100%;
+      justify-content: center;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1.5px solid #334155;
+      background: #1e293b;
+      color: #3b82f6;
+    }
+  }
 }

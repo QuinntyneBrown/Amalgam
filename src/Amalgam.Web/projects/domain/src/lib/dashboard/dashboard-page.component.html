@@ -1,6 +1,4 @@
 <div class="dashboard-page">
-  <h1>Dashboard</h1>
-
   @if (loading()) {
     <p>Loading...</p>
   }
@@ -10,31 +8,37 @@
   }
 
   @if (summary(); as s) {
-    <div class="cards-grid">
-      <ui-card title="Total Repositories">
-        <span class="stat-number">{{ s.totalRepositories }}</span>
-      </ui-card>
-
-      <ui-card title="By Type">
-        <div class="type-chips">
-          @for (entry of typeEntries; track entry.type) {
-            <ui-chip [label]="entry.type + ': ' + entry.count" />
-          }
-        </div>
-      </ui-card>
-
-      <ui-card title="Validation Status">
-        @if (s.validation.isValid) {
-          <ui-alert severity="success" message="Configuration is valid" />
-        } @else {
-          <ui-alert severity="error" message="Configuration has errors" />
-          @for (err of s.validation.errors; track err) {
-            <p class="validation-error">{{ err }}</p>
-          }
-        }
-      </ui-card>
+    <div class="header-row">
+      <h1>Dashboard</h1>
+      <ui-button variant="primary" (clicked)="onNewConfig()">New Configuration</ui-button>
     </div>
 
-    <ui-fab icon="add" label="Add Repository" (clicked)="onAddRepo()" />
+    @if (s.validation.isValid) {
+      <ui-alert severity="success"
+        title="Configuration Valid"
+        [description]="'All ' + s.totalRepositories + ' repositories validated successfully.'" />
+    } @else {
+      <ui-alert severity="error"
+        title="Configuration has errors"
+        [description]="s.validation.errors.join(', ')" />
+    }
+
+    <span class="section-label">REPOSITORIES</span>
+    <div class="stats-row">
+      @for (card of statCards; track card.type) {
+        <div class="stat-card" [style.background-color]="card.bgColor" [style.color]="card.textColor">
+          <span class="stat-number">{{ getCount(s, card.type) }}</span>
+          <span class="stat-label">{{ card.label }}</span>
+        </div>
+      }
+    </div>
+
+    <span class="section-label">QUICK ACTIONS</span>
+    <div class="quick-actions-row">
+      <ui-button variant="outline" (clicked)="onRunWizard()">Run Wizard</ui-button>
+      <ui-button variant="outline" (clicked)="onAddRepo()">Add Repository</ui-button>
+      <ui-button variant="outline" (clicked)="onValidate()">Validate</ui-button>
+      <ui-button variant="outline" (clicked)="onExportYaml()">Export YAML</ui-button>
+    </div>
   }
 </div>
