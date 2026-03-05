@@ -2,60 +2,40 @@ import { test, expect } from '@playwright/test';
 import { TemplatesPage } from '../pages/templates.page';
 
 test.describe('Template End-to-End Flow', () => {
-  test('browse templates and apply one', async ({ page }) => {
+  test('browse templates and see template cards', async ({ page }) => {
     const templates = new TemplatesPage(page);
 
-    // Step 1: Navigate to templates page
+    // Navigate to templates page
     await templates.goto();
 
-    // Step 2: Verify template cards are visible
+    // Verify template cards are visible (backend has 3 built-in templates)
     await expect(templates.templateCards.first()).toBeVisible({ timeout: 10000 });
     const count = await templates.templateCards.count();
     expect(count).toBeGreaterThan(0);
 
-    // Step 3: Get the name of the first template
+    // Verify template names are visible
     const firstCardText = await templates.templateCards.first().textContent();
     expect(firstCardText).toBeTruthy();
-
-    // Step 4: Click "Use" on the first template
-    const useButton = templates.templateCards
-      .first()
-      .locator('ui-button, button')
-      .filter({ hasText: /use|apply|select/i })
-      .first();
-
-    if (await useButton.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await useButton.click();
-      await page.waitForTimeout(2000);
-
-      // Verify we navigated somewhere (wizard or config)
-      const url = page.url();
-      expect(
-        url.includes('/wizard') ||
-        url.includes('/config') ||
-        url.includes('/repositories')
-      ).toBe(true);
-    }
   });
 
-  test('template detail shows configuration info', async ({ page }) => {
+  test('use template button navigates to wizard', async ({ page }) => {
     const templates = new TemplatesPage(page);
 
     await templates.goto();
     await expect(templates.templateCards.first()).toBeVisible({ timeout: 10000 });
 
-    // Click into a template card
-    await templates.templateCards.first().click();
-    await page.waitForTimeout(1000);
+    // Click "Use Template" on the first card
+    const useButton = templates.templateCards
+      .first()
+      .locator('ui-button')
+      .filter({ hasText: /use/i })
+      .first();
 
-    // Check if detail view or dialog opened
-    const detail = page.locator(
-      'ui-dialog, [role="dialog"], .template-detail, .detail'
-    );
-    const detailVisible = await detail.isVisible({ timeout: 3000 }).catch(() => false);
+    if (await useButton.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await useButton.click();
 
-    if (detailVisible) {
-      await expect(detail).toContainText(/.+/);
+      // Should navigate to wizard
+      await expect(page).toHaveURL(/\/wizard/, { timeout: 5000 });
     }
   });
 });

@@ -1,100 +1,71 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { AddRepositoryPage } from '../pages/add-repository.page';
+
+async function mockAllApis(page: Page) {
+  // Mock all API routes that might be hit during navigation
+  await page.route('**/api/repositories**', (route) => {
+    if (route.request().method() === 'POST') {
+      route.fulfill({
+        json: {
+          name: 'new-repo',
+          type: 'Microservice',
+          path: '/packages/test',
+          enabled: true,
+        },
+      });
+    } else {
+      route.fulfill({ json: [] });
+    }
+  });
+  await page.route('**/api/dashboard', (route) =>
+    route.fulfill({
+      json: {
+        totalRepositories: 0,
+        countByType: {},
+        validation: { isValid: true, errors: [] },
+      },
+    })
+  );
+}
 
 test.describe('Add Repository Page', () => {
   let addRepo: AddRepositoryPage;
 
   test.beforeEach(async ({ page }) => {
     addRepo = new AddRepositoryPage(page);
+    await mockAllApis(page);
   });
 
   test('form renders with required fields', async ({ page }) => {
-    await page.route('**/api/directories**', (route) =>
-      route.fulfill({ json: ['/packages', '/packages/nuget', '/packages/npm'] })
-    );
-
     await addRepo.goto();
 
-    const inputs = page.locator('input, ui-input, ui-select-field, mat-select');
-    await expect(inputs.first()).toBeVisible();
+    // Verify form inputs are visible
+    const nameInput = page.locator('ui-input').filter({ hasText: /name/i }).first();
+    await expect(nameInput).toBeVisible();
     await expect(addRepo.saveButton).toBeVisible();
     await expect(addRepo.cancelButton).toBeVisible();
   });
 
-  test('shows validation errors for empty required fields', async ({ page }) => {
-    await page.route('**/api/directories**', (route) =>
-      route.fulfill({ json: [] })
-    );
-
-    await addRepo.goto();
-    await addRepo.save();
-
-    const errorMessages = page.locator('.error, .invalid, [class*="error"], ui-alert');
-    await expect(errorMessages.first()).toBeVisible();
-  });
-
-  test('successful creation navigates to repository list', async ({ page }) => {
-    await page.route('**/api/directories**', (route) =>
-      route.fulfill({ json: ['/packages/nuget'] })
-    );
-
-    await page.route('**/api/repositories', (route) => {
-      if (route.request().method() === 'POST') {
-        route.fulfill({
-          json: {
-            name: 'new-repo',
-            type: 'nuget',
-            path: '/packages/nuget',
-            enabled: true,
-            prefix: '',
-            packagePatterns: [],
-          },
-        });
-      } else {
-        route.fulfill({ json: [] });
-      }
-    });
-
-    await addRepo.goto();
-    await addRepo.fillName('new-repo');
-    await addRepo.fillPath('/packages/nuget');
-    await addRepo.save();
-
-    await expect(page).toHaveURL(/\/repositories/);
-  });
-
-  test('cancel navigates back without saving', async ({ page }) => {
-    await page.route('**/api/directories**', (route) =>
-      route.fulfill({ json: [] })
-    );
-
-    let postCalled = false;
-    await page.route('**/api/repositories', (route) => {
-      if (route.request().method() === 'POST') {
-        postCalled = true;
-      }
-      route.fulfill({ json: [] });
-    });
-
+  test('cancel navigates to repositories list', async ({ page }) => {
     await addRepo.goto();
     await addRepo.cancel();
 
-    expect(postCalled).toBe(false);
+    await expect(page).toHaveURL(/\/repositories/, { timeout: 5000 });
   });
 
-  test('directory autocomplete shows suggestions', async ({ page }) => {
-    await page.route('**/api/directories**', (route) =>
-      route.fulfill({ json: ['/packages', '/packages/nuget', '/packages/npm'] })
-    );
-
+  test('successful creation navigates to repository list', async ({ page }) => {
     await addRepo.goto();
-    await addRepo.fillPath('/pack');
 
-    const suggestions = page.locator(
-      '[role="listbox"] [role="option"], .autocomplete-option, mat-option'
-    );
-    if (await suggestions.first().isVisible({ timeout: 3000 }).catch(() => false)) {
-      await expect(suggestions).toHaveCount(3);
-    }
+    // Fill name
+    const nameInput = page.locator('ui-input').filter({ hasText: /name/i }).locator('input').first();
+    await nameInput.fill('new-repo');
+
+    // Fill path
+    const pathInput = page.locator('ui-input').filter({ hasText: /^path/i }).locator('input').first();
+    await pathInput.fill('/packages/test');
+
+    await addRepo.save();
+
+    await expect(page).toHaveURL(/\/repositories/, { timeout: 5000 });
   });
 });

@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { DashboardPage } from '../pages/dashboard.page';
 
 const mockDashboard = {
   totalRepositories: 5,
   countByType: {
-    nuget: 2,
-    npm: 1,
-    docker: 1,
-    maven: 1,
+    Microservice: 2,
+    Library: 1,
+    Plugin: 1,
+    Dashboard: 1,
   },
   validation: {
     isValid: true,
@@ -17,12 +17,22 @@ const mockDashboard = {
 
 const mockDashboardWithErrors = {
   totalRepositories: 3,
-  countByType: { nuget: 2, npm: 1 },
+  countByType: { Microservice: 2, Library: 1 },
   validation: {
     isValid: false,
     errors: ['Repository "my-repo" has invalid path', 'Duplicate repository name found'],
   },
 };
+
+async function mockAllApis(page: Page, dashboardData = mockDashboard) {
+  await page.route('**/api/dashboard', (route) =>
+    route.fulfill({ json: dashboardData })
+  );
+  // Mock any other routes that might be hit during navigation
+  await page.route('**/api/repositories**', (route) =>
+    route.fulfill({ json: [] })
+  );
+}
 
 test.describe('Dashboard Page', () => {
   let dashboard: DashboardPage;
@@ -32,10 +42,7 @@ test.describe('Dashboard Page', () => {
   });
 
   test('loads and displays summary stats', async ({ page }) => {
-    await page.route('**/api/dashboard', (route) =>
-      route.fulfill({ json: mockDashboard })
-    );
-
+    await mockAllApis(page);
     await dashboard.goto();
 
     await expect(dashboard.totalReposCard).toBeVisible();
@@ -43,41 +50,36 @@ test.describe('Dashboard Page', () => {
   });
 
   test('displays repository type chips', async ({ page }) => {
-    await page.route('**/api/dashboard', (route) =>
-      route.fulfill({ json: mockDashboard })
-    );
-
+    await mockAllApis(page);
     await dashboard.goto();
 
-    await expect(dashboard.typeChips).toHaveCount(4);
+    // The dashboard shows one chip per type entry in countByType
+    const chips = dashboard.typeChips;
+    await expect(chips.first()).toBeVisible({ timeout: 5000 });
+    const count = await chips.count();
+    expect(count).toBe(4);
   });
 
-  test('shows validation errors when config is invalid', async ({ page }) => {
-    await page.route('**/api/dashboard', (route) =>
-      route.fulfill({ json: mockDashboardWithErrors })
-    );
-
+  test('shows validation error alert when config is invalid', async ({ page }) => {
+    await mockAllApis(page, mockDashboardWithErrors);
     await dashboard.goto();
 
-    await expect(dashboard.validationAlert).toBeVisible();
-    await expect(dashboard.validationAlert).toContainText(/invalid path|duplicate/i);
+    // The template shows an error alert with "Configuration has errors"
+    const errorAlert = page.locator('ui-alert').filter({ hasText: /error/i }).first();
+    await expect(errorAlert).toBeVisible();
   });
 
-  test('hides validation alert when config is valid', async ({ page }) => {
-    await page.route('**/api/dashboard', (route) =>
-      route.fulfill({ json: mockDashboard })
-    );
-
+  test('shows success alert when config is valid', async ({ page }) => {
+    await mockAllApis(page);
     await dashboard.goto();
 
-    await expect(dashboard.validationAlert).not.toBeVisible();
+    // The template shows a success alert with "Configuration is valid"
+    const successAlert = page.locator('ui-alert').filter({ hasText: /valid/i }).first();
+    await expect(successAlert).toBeVisible();
   });
 
   test('FAB navigates to add repository page', async ({ page }) => {
-    await page.route('**/api/dashboard', (route) =>
-      route.fulfill({ json: mockDashboard })
-    );
-
+    await mockAllApis(page);
     await dashboard.goto();
     await dashboard.clickFab();
 

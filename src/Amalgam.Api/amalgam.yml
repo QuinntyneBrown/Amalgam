@@ -1,0 +1,6 @@
+repositories: []
+backend:
+  port: 5000
+  environment: {}
+frontend:
+  port: 4200

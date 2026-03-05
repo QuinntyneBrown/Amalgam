@@ -1,129 +1,150 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { WizardPage } from '../pages/wizard.page';
 
 const mockTemplates = [
-  { id: 'basic', name: 'Basic Setup', description: 'A minimal configuration' },
-  { id: 'full', name: 'Full Stack', description: 'Complete multi-repo setup' },
+  { id: 'basic-microservice', name: 'Basic Microservice', description: 'A minimal configuration', repositoryCount: 3 },
+  { id: 'full-stack', name: 'Full Stack', description: 'Complete multi-repo setup', repositoryCount: 6 },
 ];
 
-const mockScanResults = [
-  {
-    name: 'detected-nuget',
-    type: 'nuget',
-    path: '/repos/nuget',
-    enabled: true,
-    prefix: '',
-    packagePatterns: [],
+const mockTemplateInfo = {
+  id: 'basic-microservice',
+  name: 'Basic Microservice',
+  description: 'A minimal configuration',
+  repositoryCount: 3,
+  config: {
+    repositories: [
+      { name: 'svc', type: 'Microservice', path: '/svc', enabled: true },
+      { name: 'lib', type: 'Library', path: '/lib', enabled: true },
+      { name: 'dash', type: 'Dashboard', path: '/dash', enabled: true },
+    ],
+    backend: { port: 5000, environment: {} },
+    frontend: { port: 3000 },
   },
-  {
-    name: 'detected-npm',
-    type: 'npm',
-    path: '/repos/npm',
-    enabled: true,
-    prefix: '',
-    packagePatterns: [],
-  },
-];
+};
+
+async function mockAllApis(page: Page) {
+  await page.route('**/api/templates/*', (route) =>
+    route.fulfill({ json: mockTemplateInfo })
+  );
+  await page.route('**/api/templates', (route) =>
+    route.fulfill({ json: mockTemplates })
+  );
+  await page.route('**/api/scan', (route) =>
+    route.fulfill({
+      json: [
+        { name: 'detected-svc', type: 'Microservice', path: '/repos/svc', enabled: true },
+      ],
+    })
+  );
+  await page.route('**/api/config**', (route) => {
+    if (route.request().method() === 'PUT') {
+      route.fulfill({ json: mockTemplateInfo.config });
+    } else {
+      route.fulfill({
+        json: {
+          repositories: [],
+          backend: { port: 5000, environment: {} },
+          frontend: { port: 3000 },
+        },
+      });
+    }
+  });
+  await page.route('**/api/dashboard', (route) =>
+    route.fulfill({
+      json: {
+        totalRepositories: 0,
+        countByType: {},
+        validation: { isValid: true, errors: [] },
+      },
+    })
+  );
+}
 
 test.describe('Wizard Page', () => {
   let wizard: WizardPage;
 
   test.beforeEach(async ({ page }) => {
     wizard = new WizardPage(page);
-
-    await page.route('**/api/templates', (route) => {
-      if (route.request().url().includes('/api/templates/')) {
-        const id = route.request().url().split('/').pop();
-        const template = mockTemplates.find((t) => t.id === id);
-        route.fulfill({ json: template ?? mockTemplates[0] });
-      } else {
-        route.fulfill({ json: mockTemplates });
-      }
-    });
-
-    await page.route('**/api/scan', (route) =>
-      route.fulfill({ json: mockScanResults })
-    );
-
-    await page.route('**/api/config', (route) => {
-      if (route.request().method() === 'PUT') {
-        route.fulfill({ json: {} });
-      } else {
-        route.fulfill({ json: { repositories: [], port: 5000 } });
-      }
-    });
-
-    await page.route('**/api/directories**', (route) =>
-      route.fulfill({ json: ['/repos', '/repos/nuget', '/repos/npm'] })
-    );
+    await mockAllApis(page);
   });
 
   test('wizard renders with step indicator', async () => {
     await wizard.goto();
-
     await expect(wizard.stepIndicator).toBeVisible();
   });
 
-  test('can navigate to next step', async () => {
+  test('step 0 shows choice cards', async ({ page }) => {
     await wizard.goto();
 
-    await wizard.clickNext();
+    const freshCard = page.locator('ui-card').filter({ hasText: /start fresh/i });
+    const templateCard = page.locator('ui-card').filter({ hasText: /use template/i });
+    const scanCard = page.locator('ui-card').filter({ hasText: /scan directory/i });
 
-    await expect(wizard.stepIndicator).toBeVisible();
+    await expect(freshCard).toBeVisible();
+    await expect(templateCard).toBeVisible();
+    await expect(scanCard).toBeVisible();
   });
 
-  test('back button navigates to previous step', async () => {
+  test('can select fresh and navigate to step 1', async ({ page }) => {
     await wizard.goto();
 
+    // Select "Start Fresh"
+    await page.locator('ui-card').filter({ hasText: /start fresh/i }).click();
     await wizard.clickNext();
+
+    // Step 1 should show basic config fields
+    const portInput = page.locator('ui-input').filter({ hasText: /backend port/i });
+    await expect(portInput).toBeVisible();
+  });
+
+  test('back button navigates to previous step', async ({ page }) => {
+    await wizard.goto();
+
+    // Select a choice and go to step 1
+    await page.locator('ui-card').filter({ hasText: /start fresh/i }).click();
+    await wizard.clickNext();
+
+    // Go back
     await wizard.clickBack();
 
-    await expect(wizard.stepIndicator).toBeVisible();
+    // Should be on step 0 again with choice cards
+    const freshCard = page.locator('ui-card').filter({ hasText: /start fresh/i });
+    await expect(freshCard).toBeVisible();
   });
 
-  test('template selection step shows available templates', async ({ page }) => {
+  test('template flow: select template and advance', async ({ page }) => {
     await wizard.goto();
 
-    const templateCards = page.locator('ui-card').filter({ hasText: /basic|full/i });
-    if (await templateCards.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await expect(templateCards).toHaveCount(2);
-    }
+    // Select "Use Template"
+    await page.locator('ui-card').filter({ hasText: /use template/i }).click();
+    await wizard.clickNext();
+
+    // Step 1 should show template list
+    const templateCards = page.locator('ui-card').filter({ hasText: /basic microservice|full stack/i });
+    await expect(templateCards.first()).toBeVisible({ timeout: 5000 });
   });
 
-  test('scan step detects repositories', async ({ page }) => {
+  test('can complete full wizard flow with fresh config', async ({ page }) => {
     await wizard.goto();
 
-    const scanButton = page.locator('ui-button, button').filter({ hasText: /scan/i }).first();
-    if (await scanButton.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await scanButton.click();
+    // Step 0: Choose fresh
+    await page.locator('ui-card').filter({ hasText: /start fresh/i }).click();
+    await wizard.clickNext();
 
-      const detectedRepos = page.locator('ui-card, .repo-item').filter({ hasText: /detected/i });
-      await expect(detectedRepos.first()).toBeVisible({ timeout: 5000 });
-    }
-  });
+    // Step 1: Configure - just advance (defaults are fine)
+    await wizard.clickNext();
 
-  test('can complete wizard flow', async ({ page }) => {
-    await wizard.goto();
+    // Step 2: Review - check summary visible
+    const summary = page.locator('ui-card').filter({ hasText: /summary/i });
+    await expect(summary).toBeVisible();
+    await wizard.clickNext();
 
-    // Navigate through all steps
-    for (let i = 0; i < 5; i++) {
-      const nextButton = wizard.nextButton;
-      if (await nextButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await nextButton.click();
-        await page.waitForTimeout(500);
-      } else {
-        break;
-      }
-    }
+    // Step 3: Apply - button text changes to "Apply"
+    const applyButton = page.locator('ui-button').filter({ hasText: /apply/i }).first();
+    await expect(applyButton).toBeVisible();
+    await applyButton.click();
 
-    // Look for a finish/complete button at the end
-    const finishButton = page
-      .locator('ui-button, button')
-      .filter({ hasText: /finish|complete|done/i })
-      .first();
-
-    if (await finishButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await finishButton.click();
-    }
+    // Should navigate to dashboard
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 5000 });
   });
 });
